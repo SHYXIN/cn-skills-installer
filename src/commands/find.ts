@@ -14,7 +14,7 @@ const SEARCH_API_BASE = 'https://skills.sh';
 
 function formatInstalls(count: number): string {
   if (!count || count <= 0) return '';
-  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1).replace(/\.0$/, '')}K installs`;
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1).replace(/\.0$/, '')}M installs`;
   if (count >= 1_000) return `${(count / 1_000).toFixed(1).replace(/\.0$/, '')}K installs`;
   return `${count} install${count === 1 ? '' : 's'}`;
 }
@@ -37,11 +37,11 @@ async function searchSkillsAPI(query: string): Promise<SearchSkill[]> {
 /**
  * 搜索 skills 并交互式选择安装。
  * 对齐 npx skills find 命令，数据源为 skills.sh。
+ * 显示格式参考 skills-cn：source@name installs + skills.sh 链接
  */
 export async function runFind(args: string[]): Promise<void> {
   const keyword = args.join(' ');
 
-  // 非交互模式（无 keyword）：提示用户输入
   if (!keyword) {
     p.log.info('交互式搜索模式');
     p.log.info('提示：可以直接传关键词，如：cn-skills find python');
@@ -69,11 +69,26 @@ export async function runFind(args: string[]): Promise<void> {
     process.exit(0);
   }
 
-  // 显示搜索结果
-  const choices = results.map((skill) => ({
+  // 显示搜索结果 — 格式：source@name installs
+  console.log('');
+  p.log.message(pc.dim('Install with cn-skills add <owner/repo@skill>'));
+  console.log('');
+
+  for (const skill of results.slice(0, 10)) {
+    const pkg = skill.source;
+    const installs = formatInstalls(skill.installs);
+    console.log(
+      `${pc.cyan(`${pkg}@${skill.name}`)}${installs ? ` ${pc.green(installs)}` : ''}`
+    );
+    console.log(`${pc.dim(`└ https://skills.sh/${skill.id}`)}`);
+    console.log('');
+  }
+
+  // 让用户选择
+  const choices = results.slice(0, 10).map((skill) => ({
     value: skill,
-    label: pc.bold(skill.name),
-    hint: `${skill.source} | ${formatInstalls(skill.installs)}`,
+    label: pc.cyan(`${skill.source}@${skill.name}`),
+    hint: formatInstalls(skill.installs),
   }));
 
   const selected = await p.select({
