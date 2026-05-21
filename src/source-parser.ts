@@ -268,16 +268,16 @@ async function repoExists(url: string, source: 'gitee' | 'github'): Promise<bool
       // Gitee API: https://gitee.com/api/v5/repos/{owner}/{repo}
       const apiUrl = url.replace('https://gitee.com/', 'https://gitee.com/api/v5/repos/');
       const res = await fetch(apiUrl, {
-        method: 'HEAD',
-        signal: AbortSignal.timeout(5000),
+        method: 'GET',
+        signal: AbortSignal.timeout(8000),
       });
       return res.ok;
     } else {
       // GitHub API
       const apiUrl = url.replace('https://github.com/', 'https://api.github.com/repos/');
       const res = await fetch(apiUrl, {
-        method: 'HEAD',
-        signal: AbortSignal.timeout(5000),
+        method: 'GET',
+        signal: AbortSignal.timeout(8000),
       });
       return res.ok;
     }
