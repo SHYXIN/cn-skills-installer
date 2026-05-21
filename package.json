@@ -8,8 +8,7 @@
     "cn-skills-cli": "dist/cli.js"
   },
   "files": [
-    "dist",
-    "index"
+    "dist"
   ],
   "scripts": {
     "build": "tsup src/cli.ts --format esm --clean --shims",
