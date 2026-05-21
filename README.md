@@ -1,13 +1,28 @@
-# cn-skills
+# cn-skills（cn-skills-installer）
 
 中国优化的 AI Agent Skills 安装工具。
 
 支持 **Gitee/GitHub 双源**、**镜像加速**、**中文技能索引**，兼容 `npx skills` 的目录结构。
 
+> **npm 包名**：`cn-skills-installer`
+> **命令名**：`cn-skills`
+
 ## 安装
 
 ```bash
-npm install -g cn-skills
+npm install -g cn-skills-installer
+```
+
+安装后使用 `cn-skills` 命令：
+
+```bash
+cn-skills --version
+```
+
+也可以用 npx 直接运行：
+
+```bash
+npx cn-skills-installer add owner/repo
 ```
 
 ## 快速开始
@@ -111,6 +126,9 @@ npm run dev -- add owner/repo
 
 # 类型检查
 npm run type-check
+
+# 运行测试
+npm test
 
 # 构建
 npm run build
