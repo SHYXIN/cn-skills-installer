@@ -6,7 +6,10 @@ import { runSearch } from './commands/search.ts';
 import { runList } from './commands/list.ts';
 import { runRemove } from './commands/remove.ts';
 
-const VERSION = '0.1.0';
+// 版本号由 npm version 自动更新 package.json，这里读取
+import { readFileSync } from 'fs';
+const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
+const VERSION = pkg.version;
 
 function showHelp(): void {
   console.log(`
