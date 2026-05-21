@@ -4,8 +4,8 @@
   "description": "中国优化的 AI Agent Skills 安装工具 - 支持 Gitee/GitHub 双源、镜像加速、中文索引",
   "type": "module",
   "bin": {
-    "cn-skills": "./dist/cli.js",
-    "cn-skills-installer": "./dist/cli.js"
+    "cn-skills": "./dist/cli",
+    "cn-skills-installer": "./dist/cli"
   },
   "main": "./dist/cli.js",
   "files": [
@@ -13,7 +13,7 @@
     "index"
   ],
   "scripts": {
-    "build": "tsup src/cli.ts --format esm --clean --shims",
+    "build": "tsup src/cli.ts --format esm --clean --shims && node -e \"const fs=require('fs'); fs.renameSync('dist/cli.js','dist/cli')\"",
     "dev": "tsx src/cli.ts",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
