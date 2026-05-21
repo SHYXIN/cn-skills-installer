@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 
 import pc from 'picocolors';
+import { readFileSync } from 'fs';
 import { runAdd } from './commands/add.ts';
-import { runSearch } from './commands/search.ts';
+import { runFind } from './commands/find.ts';
 import { runList } from './commands/list.ts';
 import { runRemove } from './commands/remove.ts';
 
-// 版本号由 npm version 自动更新 package.json，这里读取
-import { readFileSync } from 'fs';
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
 const VERSION = pkg.version;
 
@@ -21,7 +20,7 @@ ${pc.bold('用法：')}
 
 ${pc.bold('命令：')}
   ${pc.cyan('add')} <source>     安装 skill
-  ${pc.cyan('search')} [关键词]  搜索中文 skill 索引
+  ${pc.cyan('find')} [关键词]    从 GitHub 搜索 skills（对齐 npx skills find）
   ${pc.cyan('list')}            列出已安装的 skills
   ${pc.cyan('remove')} <name>   移除已安装的 skill
   ${pc.cyan('config')}          查看/初始化配置文件
@@ -30,16 +29,17 @@ ${pc.bold('命令：')}
 
 ${pc.bold('add 命令选项：')}
   ${pc.dim('--agent <name>')}    指定 agent（默认自动检测）
-  ${pc.dim('--global')}          全局安装（~/.agent/skills/）
+  ${pc.dim('--global')}          全局安装（~/.agents/skills/）
   ${pc.dim('--yes')}             跳过确认
   ${pc.dim('--source <gitee|github>')}  强制使用指定源
-  ${pc.dim('--copy')}             复制模式（默认 symlink）
+  ${pc.dim('--copy')}            复制模式（默认 symlink）
 
 ${pc.bold('示例：')}
   cn-skills add gitee:owner/repo
   cn-skills add github:anthropics/skills
   cn-skills add owner/repo --source gitee
-  cn-skills search 代码审查
+  cn-skills find python          # 从 GitHub 搜索 python 相关 skills
+  cn-skills find                 # 浏览热门 skills
   cn-skills list
   cn-skills remove my-skill
 
@@ -51,6 +51,10 @@ ${pc.bold('支持的源格式：')}
   ${pc.dim('·')} https://github.com/...   完整 URL
   ${pc.dim('·')} git@host:owner/repo.git  SSH 地址
   ${pc.dim('·')} ./local/path             本地路径
+
+${pc.bold('GitHub 加速：')}
+  自动检测可用镜像（gh-proxy.org / kkgithub.com 等）
+  无需手动配置，克隆 GitHub 仓库时自动加速
 `);
 }
 
@@ -66,7 +70,7 @@ function parseArgs(argv: string[]): {
   positional: string[];
   options: Record<string, string | boolean>;
 } {
-  const args = argv.slice(2); // 跳过 node 和脚本路径
+  const args = argv.slice(2);
   const command = args[0] || 'help';
   const positional: string[] = [];
   const options: Record<string, string | boolean> = {};
@@ -106,9 +110,8 @@ async function main(): Promise<void> {
         });
         break;
 
-      case 'search':
       case 'find':
-        await runSearch(positional);
+        await runFind(positional);
         break;
 
       case 'list':

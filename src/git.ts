@@ -19,15 +19,56 @@ export class GitCloneError extends Error {
 }
 
 /**
+ * GitHub 镜像代理列表（按优先级排序）。
+ * 参考 skills-cn 的方案，使用多个镜像源提高成功率。
+ */
+const GITHUB_MIRRORS = [
+  'https://gh-proxy.org/https://github.com',   // gh-proxy.org 代理
+  'https://kkgithub.com',                        // kkgithub.com 镜像
+  'https://gitmirror.com/github.com',            // gitmirror 镜像
+  'https://hub.gitmirror.com/github.com',        // gitmirror hub
+  'https://ghproxy.net/https://github.com',     // ghproxy.net
+];
+
+/**
+ * 检测可用的 GitHub 镜像。
+ * 返回第一个可用的镜像 URL，如果都不可用则返回原始 GitHub URL。
+ */
+async function detectAvailableMirror(): Promise<string> {
+  for (const mirror of GITHUB_MIRRORS) {
+    try {
+      const res = await fetch(mirror, {
+        method: 'HEAD',
+        signal: AbortSignal.timeout(3000),
+      });
+      if (res.ok || res.status === 302 || res.status === 301) {
+        return mirror;
+      }
+    } catch {
+      // 不可用，尝试下一个
+    }
+  }
+  return 'https://github.com'; // fallback 到原始地址
+}
+
+/**
  * 用 child_process.spawn 直接调用 git 克隆。
- * 绕过 simple-git 的 GIT_ASKPASS / filter.lfs 安全限制问题。
+ * 支持 GitHub 镜像加速，提升中国用户的克隆速度。
  */
 export async function cloneRepo(
   url: string,
   ref?: string,
   mirrorUrl?: string
 ): Promise<string> {
-  const cloneUrl = mirrorUrl ? applyMirror(url, mirrorUrl) : url;
+  // 如果没有指定镜像 URL 且是 GitHub 仓库，自动检测可用镜像
+  let cloneUrl = url;
+  if (!mirrorUrl && url.includes('github.com')) {
+    mirrorUrl = await detectAvailableMirror();
+  }
+  if (mirrorUrl) {
+    cloneUrl = applyMirror(url, mirrorUrl);
+  }
+
   const tempDir = await mkdtemp(join(tmpdir(), 'cn-skills-'));
 
   const args = ['clone', '--depth', '1', '--no-recurse-submodules'];
@@ -42,8 +83,8 @@ export async function cloneRepo(
         ...process.env,
         GIT_TERMINAL_PROMPT: '0',
         GIT_LFS_SKIP_SMUDGE: '1',
-        GIT_ASKPASS: 'echo', // 禁用 askpass，避免安全限制
-        GCM_INTERACTIVE: 'never', // 禁用 git credential manager 交互
+        GIT_ASKPASS: 'echo',
+        GCM_INTERACTIVE: 'never',
       },
       stdio: ['pipe', 'pipe', 'pipe'],
     });
@@ -115,11 +156,18 @@ export async function cloneRepo(
 
 /**
  * 应用镜像替换。
- * 例如：https://github.com/owner/repo → https://hub.fastgit.xyz/owner/repo
+ * 例如：https://github.com/owner/repo → https://gh-proxy.org/https://github.com/owner/repo
  */
 function applyMirror(originalUrl: string, mirrorUrl: string): string {
   if (originalUrl.includes('github.com')) {
-    return originalUrl.replace('https://github.com', mirrorUrl);
+    // 处理不同镜像的 URL 格式
+    if (mirrorUrl.includes('gh-proxy.org') || mirrorUrl.includes('ghproxy.net')) {
+      // 代理模式：在 URL 前加代理前缀
+      return originalUrl.replace('https://github.com', mirrorUrl);
+    } else {
+      // 镜像模式：替换域名
+      return originalUrl.replace('https://github.com', mirrorUrl);
+    }
   }
   return originalUrl;
 }
