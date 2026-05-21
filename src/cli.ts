@@ -20,7 +20,7 @@ ${pc.bold('用法：')}
 
 ${pc.bold('命令：')}
   ${pc.cyan('add')} <source>     安装 skill
-  ${pc.cyan('find')} [关键词]    从 GitHub 搜索 skills（对齐 npx skills find）
+  ${pc.cyan('find')} [关键词]    从 skills.sh 搜索 skills（对齐 npx skills find）
   ${pc.cyan('list')}            列出已安装的 skills
   ${pc.cyan('remove')} <name>   移除已安装的 skill
   ${pc.cyan('config')}          查看/初始化配置文件

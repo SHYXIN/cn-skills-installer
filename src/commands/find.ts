@@ -2,55 +2,59 @@ import * as p from '@clack/prompts';
 import pc from 'picocolors';
 import { runAdd } from './add.ts';
 
-interface GitHubRepo {
-  full_name: string;
-  description: string;
-  stargazers_count: number;
-  html_url: string;
-  topics: string[];
+interface SearchSkill {
+  id: string;       // 完整路径，如 "wshobson/agents/python-performance-optimization"
+  skillId: string;  // skill 名称，如 "python-performance-optimization"
+  name: string;     // 显示名称
+  installs: number; // 安装量
+  source: string;   // 来源，如 "wshobson/agents"
+}
+
+const SEARCH_API_BASE = 'https://skills.sh';
+
+function formatInstalls(count: number): string {
+  if (!count || count <= 0) return '';
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1).replace(/\.0$/, '')}K installs`;
+  if (count >= 1_000) return `${(count / 1_000).toFixed(1).replace(/\.0$/, '')}K installs`;
+  return `${count} install${count === 1 ? '' : 's'}`;
 }
 
 /**
- * 从 GitHub 搜索 skills 仓库。
- * 搜索策略：
- * 1. 搜索包含 SKILL.md 的仓库
- * 2. 搜索 topic:agent-skills 的仓库
- * 3. 按 stars 排序，优先展示高质量 skills
+ * 从 skills.sh API 搜索 skills。
  */
-async function searchSkills(query: string): Promise<GitHubRepo[]> {
-  const keywords = query.trim() || 'agent-skills';
-  const searchQuery = encodeURIComponent(`${keywords} topic:agent-skills`);
-  const apiUrl = `https://api.github.com/search/repositories?q=${searchQuery}&sort=stars&order=desc&per_page=20`;
-
-  const res = await fetch(apiUrl, {
-    signal: AbortSignal.timeout(10000),
-    headers: {
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'cn-skills-cli',
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`GitHub API 请求失败：HTTP ${res.status}`);
+async function searchSkillsAPI(query: string): Promise<SearchSkill[]> {
+  try {
+    const url = `${SEARCH_API_BASE}/api/search?q=${encodeURIComponent(query)}&limit=20`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.skills || []) as SearchSkill[];
+  } catch {
+    return [];
   }
-
-  const data = await res.json();
-  return (data.items || []) as GitHubRepo[];
 }
 
 /**
  * 搜索 skills 并交互式选择安装。
- * 对齐原版 npx skills find 命令。
+ * 对齐 npx skills find 命令，数据源为 skills.sh。
  */
 export async function runFind(args: string[]): Promise<void> {
   const keyword = args.join(' ');
 
+  // 非交互模式（无 keyword）：提示用户输入
+  if (!keyword) {
+    p.log.info('交互式搜索模式');
+    p.log.info('提示：可以直接传关键词，如：cn-skills find python');
+  }
+
   const spinner = p.spinner();
   spinner.start(keyword ? `正在搜索 "${keyword}"...` : '正在加载热门 skills...');
 
-  let results: GitHubRepo[];
+  let results: SearchSkill[];
   try {
-    results = await searchSkills(keyword);
+    results = keyword
+      ? await searchSkillsAPI(keyword)
+      : await searchSkillsAPI('agent-skills');
     spinner.stop(`找到 ${results.length} 个 skill`);
   } catch (error) {
     spinner.stop('搜索失败');
@@ -66,10 +70,10 @@ export async function runFind(args: string[]): Promise<void> {
   }
 
   // 显示搜索结果
-  const choices = results.map((repo) => ({
-    value: repo,
-    label: pc.bold(repo.full_name),
-    hint: `⭐ ${repo.stargazers_count} | ${(repo.description || '').slice(0, 50)}`,
+  const choices = results.map((skill) => ({
+    value: skill,
+    label: pc.bold(skill.name),
+    hint: `${skill.source} | ${formatInstalls(skill.installs)}`,
   }));
 
   const selected = await p.select({
@@ -79,16 +83,15 @@ export async function runFind(args: string[]): Promise<void> {
 
   if (p.isCancel(selected)) process.exit(0);
 
-  const repo = selected as GitHubRepo;
+  const skill = selected as SearchSkill;
 
   // 显示详情
   console.log('');
   p.log.message(
-    `${pc.bold(repo.full_name)}\n\n` +
-      `  描述：${repo.description || '无描述'}\n` +
-      `  Stars：${repo.stargazers_count}\n` +
-      `  地址：${repo.html_url}\n` +
-      `  标签：${repo.topics?.join(', ') || '无'}`
+    `${pc.bold(skill.name)}\n\n` +
+      `  来源：${skill.source}\n` +
+      `  安装量：${formatInstalls(skill.installs)}\n` +
+      `  链接：https://skills.sh/${skill.id}`
   );
 
   // 询问是否安装
@@ -101,6 +104,6 @@ export async function runFind(args: string[]): Promise<void> {
     process.exit(0);
   }
 
-  // 从 full_name 提取 owner/repo
-  await runAdd([repo.full_name], { yes: false });
+  // 用 source（owner/repo）安装
+  await runAdd([skill.source], { yes: false, skill: [skill.skillId] });
 }
