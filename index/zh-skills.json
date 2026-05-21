@@ -1,0 +1,182 @@
+[
+  {
+    "name": "ad-compliance-review",
+    "description": "广告合规审核技能，审核广告素材是否符合中国广告法及相关法规",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "法律合规",
+    "tags": ["广告", "合规", "审核", "广告法"]
+  },
+  {
+    "name": "contract-review",
+    "description": "合同审查技能，添加评论式问题标注，不修改原文",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "法律合规",
+    "tags": ["合同", "审查", "法律", "风险"]
+  },
+  {
+    "name": "contract-gen",
+    "description": "合同生成技能，以资深法律专家身份生成完整合同",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "法律合规",
+    "tags": ["合同", "生成", "法律"]
+  },
+  {
+    "name": "food-label-review",
+    "description": "预包装食品标签合规审核，检查是否符合 GB 7718 和 GB 28050",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "法律合规",
+    "tags": ["食品", "标签", "GB 7718", "GB 28050", "合规"]
+  },
+  {
+    "name": "legal-risk-visualization",
+    "description": "法律风险结构化分析与可视化，生成雷达图、风险矩阵、影响路径图",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "法律合规",
+    "tags": ["法律", "风险", "可视化", "分析"]
+  },
+  {
+    "name": "law-to-markdown",
+    "description": "将法条/规范文件（.txt/.docx/.pdf）转为 Markdown",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "法律合规",
+    "tags": ["法条", "markdown", "转换"]
+  },
+  {
+    "name": "legal-job-search",
+    "description": "法律AI求职助手，帮助法律人使用AI辅助求职",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "法律合规",
+    "tags": ["求职", "法律", "简历"]
+  },
+  {
+    "name": "frontend-dev",
+    "description": "全栈前端开发，结合 UI 设计、动画、AI 生成媒体和文案",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "开发",
+    "tags": ["前端", "UI", "设计", "开发"]
+  },
+  {
+    "name": "fullstack-dev",
+    "description": "全栈后端架构和前端后端集成指南",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "开发",
+    "tags": ["全栈", "后端", "API", "开发"]
+  },
+  {
+    "name": "tdd",
+    "description": "测试驱动开发，红-绿-重构循环",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "开发",
+    "tags": ["TDD", "测试", "开发"]
+  },
+  {
+    "name": "cloudbase",
+    "description": "腾讯云开发（云开发）项目开发指南",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "云服务",
+    "tags": ["cloudbase", "腾讯云", "云开发", "小程序"]
+  },
+  {
+    "name": "socratic-tutor",
+    "description": "自适应教学 skill，根据用户理解水平动态调整讲解深度",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "教育",
+    "tags": ["教学", "学习", "自适应"]
+  },
+  {
+    "name": "deep-reading-analyst",
+    "description": "深度阅读分析框架，使用 10+ 种思维模型分析文章",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "教育",
+    "tags": ["阅读", "分析", "思维模型"]
+  },
+  {
+    "name": "idea-alchemist",
+    "description": "想法炼金师，帮普通人把模糊想法变成清晰的产品蓝图和技术规格",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "产品",
+    "tags": ["产品", "需求", "想法", "PRD"]
+  },
+  {
+    "name": "write-a-prd",
+    "description": "编写产品需求文档（PRD）",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "产品",
+    "tags": ["PRD", "产品", "需求"]
+  },
+  {
+    "name": "data-storytelling",
+    "description": "将数据转化为引人入胜的叙事，使用可视化和说服性结构",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "数据",
+    "tags": ["数据", "可视化", "叙事", "报告"]
+  },
+  {
+    "name": "content-research-writer",
+    "description": "内容研究写作助手，研究、引用、改进大纲",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "写作",
+    "tags": ["写作", "研究", "内容"]
+  },
+  {
+    "name": "gif-sticker-maker",
+    "description": "将照片转换为 4 个带字幕的动画 GIF 贴纸",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "媒体",
+    "tags": ["GIF", "贴纸", "动画", "表情包"]
+  },
+  {
+    "name": "minimax-docx",
+    "description": "专业 Word 文档创建、编辑和格式化",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "办公",
+    "tags": ["Word", "DOCX", "文档"]
+  },
+  {
+    "name": "pptx",
+    "description": "PowerPoint 演示文稿创建和编辑",
+    "source": "github",
+    "owner": "anthropics",
+    "repo": "claude-code-skills",
+    "category": "办公",
+    "tags": ["PPT", "演示", "幻灯片"]
+  }
+]
