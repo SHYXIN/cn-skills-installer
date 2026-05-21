@@ -30,6 +30,7 @@ ${pc.bold('add 命令选项：')}
   ${pc.dim('--global')}          全局安装（~/.agent/skills/）
   ${pc.dim('--yes')}             跳过确认
   ${pc.dim('--source <gitee|github>')}  强制使用指定源
+  ${pc.dim('--copy')}             复制模式（默认 symlink）
 
 ${pc.bold('示例：')}
   cn-skills add gitee:owner/repo
@@ -98,6 +99,7 @@ async function main(): Promise<void> {
           global: options.global as boolean,
           yes: options.yes as boolean,
           source: options.source as 'gitee' | 'github' | undefined,
+          copy: options.copy as boolean,
         });
         break;
 

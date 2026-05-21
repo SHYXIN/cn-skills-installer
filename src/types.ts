@@ -69,6 +69,8 @@ export interface AgentConfig {
   skillsDir: string;
   globalSkillsDir: string | undefined;
   detectInstalled: () => Promise<boolean>;
+  /** 是否在通用列表中显示（锁定在顶部，不可取消选择） */
+  showInUniversalList?: boolean;
 }
 
 export interface ParsedSource {
