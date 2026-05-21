@@ -33,21 +33,17 @@ export async function cloneRepo(
   const tempDir = await mkdtemp(join(tmpdir(), 'cn-skills-'));
   const git = simpleGit({
     timeout: { block: CLONE_TIMEOUT_MS },
-    config: [
-      'filter.lfs.required=false',
-      'filter.lfs.smudge=',
-      'filter.lfs.clean=',
-      'filter.lfs.process=',
-    ],
   }).env({
     ...process.env,
     GIT_TERMINAL_PROMPT: '0',
     GIT_LFS_SKIP_SMUDGE: '1',
   });
 
-  const cloneOptions = ref
-    ? ['--depth', '1', '--branch', ref]
-    : ['--depth', '1'];
+  // 浅克隆 + 跳过 LFS，避免 filter 配置报错
+  const cloneOptions = ['--depth', '1', '--no-recurse-submodules'];
+  if (ref) {
+    cloneOptions.push('--branch', ref);
+  }
 
   try {
     await git.clone(cloneUrl, tempDir, cloneOptions);
