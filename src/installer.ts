@@ -1,6 +1,6 @@
 import { symlink, unlink, mkdir, readdir, readFile, writeFile, lstat, rm, realpath } from 'fs/promises';
 import { join, basename, dirname, resolve, normalize, sep } from 'path';
-import { homedir } from 'os';
+import { homedir, tmpdir } from 'os';
 import { AGENTS_DIR, SKILLS_SUBDIR } from './constants.ts';
 import type { AgentConfig, Skill } from './types.ts';
 
@@ -76,10 +76,13 @@ export async function installSkillForAgent(
     throw new Error(`Path traversal detected: ${dest}`);
   }
 
-  if (mode === 'symlink') {
+  // 如果源路径在临时目录中（会被清理），强制使用 copy 模式
+  const isTempPath = skill.path.includes('cn-skills-') && skill.path.includes(tmpdir());
+  const effectiveMode = isTempPath ? 'copy' : mode;
+
+  if (effectiveMode === 'symlink') {
     const success = await createSymlink(skill.path, dest);
     if (!success) {
-      // Fallback to copy
       await copyDirectory(skill.path, dest);
     }
   } else {
